@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import { CurrentDate } from "../Interfaces/currentTime";
 
 type Props = CurrentDate;
@@ -8,13 +8,13 @@ type Props = CurrentDate;
 export default function CurrentWeather(props: CurrentDate) {
   const [localData, setLocalData] = useState<CurrentDate | null>(null);
 
-  // Save To Local
+  // --------------------------------------------------------------- Save To Local
   useEffect(() => {
     if (props.city.name) {
       localStorage.setItem("currentWeather", JSON.stringify(props));
       setLocalData(props);
     } else {
-      // Load From Local
+      // ----------------------------------------------------------- Load From Local
       const saved = localStorage.getItem("currentWeather");
       if (saved) {
         setLocalData(JSON.parse(saved));
@@ -34,48 +34,56 @@ export default function CurrentWeather(props: CurrentDate) {
   const { city, temp, condition, conditionIcon, low, high, date } = localData;
   const iconUrl = `https://openweathermap.org/img/wn/${conditionIcon}@2x.png`;
 
-    return (
-      <section className=" mt-8 bg-white/10 backdrop-blur-md rounded-xl p-6 text-white w-full max-w-md shadow-lg ">
-        {/* City, Temp, Weather */}
-        <div className="mt-6 text-center">
-          <div className="grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="inline-flex items-center">
-              <p className="text-4xl font-thin"> {city.name}</p>
-              <p className="text-2xl ms-2 font-medium">{city.country}</p>
-            </div>           
-            <div className="font-thin">
-              <p>Low / High</p>
-              <p className="text-2xl ">{high}°F / {low}°F </p>
-            </div>
+  const addToFavorites = () => {
+    if (!city?.name) return;
 
+    const saved = localStorage.getItem("favorites");
+    let favs: string[] = saved ? JSON.parse(saved) : [];
 
-             <div className="inline-flex">
-             <p className="text-5xl font-thin">{temp}°F</p>
-              <img src={iconUrl} alt="condition icon" className="w-16 pb-3" /> 
-              <p className="text-lg">{condition}</p>
-            </div>
-            <div className=" pt-2 text-4xl font-thin">
-              {date}
-            </div>
+    if (favs.includes(city.name)) {
+      alert(`${city.name} is already in your favorites!`);
+      return;
+    }
+
+    favs.push(city.name);
+    localStorage.setItem("favorites", JSON.stringify(favs));
+    window.dispatchEvent(new Event("favoritesUpdated"));
+
+    alert(`${city.name} was added to your favorites!`);
+  };
+
+  return (
+    <section className=" mt-8 bg-white/10 backdrop-blur-md rounded-xl text-white w-full max-w-md shadow-lg ">
+      {/* City, Temp, Weather */}
+      <button
+        onClick={addToFavorites}
+        className="h-5 w-5 cursor-pointer transition transform hover:scale-110 active:scale-90 hover:brightness-125 flex justify-end ms-2 mt-3"
+      >
+        <img src="/assets/star.png" alt="favorites" />
+      </button>
+      <div className="mx-6 text-center">
+        <div className="grid grid-cols-2 grid-rows-2 gap-4">
+          <div className="inline-flex items-center">
+            <p className="text-4xl font-thin"> {city.name}</p>
+            <p className="text-2xl ms-2 font-light relative bottom-4">
+              {city.country}
+            </p>
           </div>
-          
+          <div className="font-thin">
+            <p>Low / High</p>
+            <p className="text-2xl ">
+              {high}°F / {low}°F{" "}
+            </p>
+          </div>
+
+          <div className="inline-flex">
+            <p className="text-4xl font-thin">{temp}°F</p>
+            <img src={iconUrl} alt="condition icon" className="w-16 " />
+            <p className="text-lg relative bottom-3 right-10">{condition}</p>
+          </div>
+          <div className=" text-4xl font-thin">{date}</div>
         </div>
-
-        {/* <div className="flex justify-between items-center">
-    <div>
-      <h2 className="text-4xl font-light">Stockton</h2>
-      <p className="text-sm">Friday • 12/6</p>
-    </div>
-    <div className="text-right">
-      <p className="text-lg">64° / 38°</p>
-      <p className="text-sm">Haze</p>
-    </div>
-  </div> */}
-  
-        {/* High/Low & Weather Condition */}
-       
-
-      </section>
-    );
-  }
-  
+      </div>
+    </section>
+  );
+}

@@ -14,7 +14,7 @@ export default function FiveDayForecast({ city }: { city: string }) {
       const groupedByDay: { [date: string]: any[] } = {};
       const todayStr = new Date().toLocaleDateString("en-US");
 
-      // Grab Dates
+      // --------------------------------------------------------------- Grab Dates
       apiData.list.forEach((entry: any) => {
         const dateStr = new Date(entry.dt * 1000).toLocaleDateString("en-US");
 
@@ -26,7 +26,7 @@ export default function FiveDayForecast({ city }: { city: string }) {
         groupedByDay[dateStr].push(entry);
       });
 
-      // Get 5 days data
+      // --------------------------------------------------------------- Get 5 days data
       const forecastDays = Object.keys(groupedByDay).slice(0, 5);
 
       const dateData = forecastDays.map((dateStr) => {
@@ -39,7 +39,7 @@ export default function FiveDayForecast({ city }: { city: string }) {
         const midday = dataEntries[Math.floor(dataEntries.length / 2)];
         const date = new Date(midday.dt * 1000);
 
-        // Convert Data
+        // --------------------------------------------------------------- Convert Data
         return {
           day: date.toLocaleDateString("en-US", { weekday: "long" }),
           date: date.toLocaleDateString("en-US", {
