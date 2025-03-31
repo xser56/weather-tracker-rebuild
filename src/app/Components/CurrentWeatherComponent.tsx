@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { CurrentDate } from "../Interfaces/currentTime";
 
-type Props = CurrentDate;
-
 export default function CurrentWeather(props: CurrentDate) {
   const [localData, setLocalData] = useState<CurrentDate | null>(null);
 
@@ -38,7 +36,7 @@ export default function CurrentWeather(props: CurrentDate) {
     if (!city?.name) return;
 
     const saved = localStorage.getItem("favorites");
-    let favs: string[] = saved ? JSON.parse(saved) : [];
+    const favs = saved ? JSON.parse(saved) : [];
 
     if (favs.includes(city.name)) {
       alert(`${city.name} is already in your favorites!`);
